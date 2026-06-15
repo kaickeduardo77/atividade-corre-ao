@@ -1,5 +1,5 @@
 import { ItensPedido } from "../models/ItensPedido.js";
-import pedidoRepository from "../repositories/pedidosRepository.js";
+import pedidoRepository from "../repositories/pedidoRepository.js";
 import { statusPedido } from "../enum/statusPedido.js";
 
 const pedidoController = {
