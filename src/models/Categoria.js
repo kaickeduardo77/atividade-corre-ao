@@ -2,21 +2,31 @@ export class Categoria {
     #id;
     #nome;
     #descricao;
-    #dataCat;
+    #dataCad;
 
     constructor(pNome, pDescricao, pId) {
-        this.nome = pNome; // Validação via setter
-        this.descricao = pDescricao; // Validação via setter
+        this.nome = pNome;
+        this.descricao = pDescricao;
         this.id = pId;
+        this.#dataCad = new Date();
+    }
+
+    get id() {
+        return this.#id;
+    }
+    get nome() {
+        return this.#nome
     }
 
     set nome(value) {
         this.#validarNome(value);
-        this.#nome = value;
+        this.#nome = value
     }
-
-    get nome() {
-        return this.#nome;
+    get descricao() {
+        return this.#descricao
+    }
+    get dataCad() {
+        return this.#dataCad;
     }
 
     set descricao(value) {
@@ -24,48 +34,30 @@ export class Categoria {
         this.#descricao = value;
     }
 
-    get descricao() {
-        return this.#descricao;
-    }
 
     set id(value) {
-        this.#validarId(value);
-        this.#id = value;
-    }
-
-    get id() { //importante quanod o erro é de valor nulo
-        return this.#id;
+        this.#validarId(value)
+        this.#id = value
     }
 
     #validarNome(value) {
-        if (
-            !value ||
-            value.trim().length < 3 ||
-            value.trim().length > 45
-        ) {
-            throw new Error("Nome inválido");
+        if (!value || value.trim().length < 3 || value.trim().length > 45) {
+            throw new Error('O campo nome é obrigatório e deve ter entre 3 a 45 caracteres')
         }
     }
 
     #validarDescricao(value) {
-        if (
-            value &&
-            (value.trim().length < 5 ||
-            value.trim().length > 100)
-        ) {
-            throw new Error("Descrição inválida");
+        if (value && (value.trim().length < 5 || value.trim().length > 100)) {
+            throw new Error('O campo descrição  deve ter entre 5 a 100 caracteres')
         }
     }
 
     #validarId(value) {
-        if (
-            value && value <= 0
-        ) {
-            throw new Error("ID inválido");
+        if (value && value <= 0) {
+            throw new Error('O valor do ID não corresponde ao esperado')
         }
     }
 
-    // Desing pattern Factory Method
     static criar(dados) {
         return new Categoria(dados.nome, dados.descricao, null);
     }
@@ -73,4 +65,6 @@ export class Categoria {
     static editar(dados, id) {
         return new Categoria(dados.nome, dados.descricao, id);
     }
+
+
 }
