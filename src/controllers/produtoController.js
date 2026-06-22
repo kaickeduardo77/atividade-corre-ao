@@ -12,7 +12,7 @@ const produtoController = {
             const estoque = Number(req.body.estoque); // converte o estoque recebido na requisição para número
             const vinculoImagem = `/uploads/image/${req.file.filename}`;
 
-            const produto = Produto.criar({ idCategoria, nome, preco, estoque, imagem: vinculoImagem }); // utiliza o método estático criar da classe Produto para criar um objeto da classe Produto a partir dos dados recebidos na requisição
+            const produto = Produto.criar({ idCategoria, nome, valor, estoque, imagem }); // utiliza o método estático criar da classe Produto para criar um objeto da classe Produto a partir dos dados recebidos na requisição
 
             console.log(produto.estoque);
             

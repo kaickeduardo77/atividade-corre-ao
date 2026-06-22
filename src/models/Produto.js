@@ -2,12 +2,12 @@ export class Produto {
     #id;
     #idCategoria;
     #nomeProduto;
-    #preco;
+    #valor;
     #imagem;
     #estoque;
     #dataCad;
 
-    constructor(pIdCategoria, pNomeProduto, ppreco, pimagem, pEstoque, pId) {
+    constructor(pIdCategoria, pNomeProduto, pvalor, pimagem, pEstoque, pId) {
         this.idCategoria = pIdCategoria;
         this.nomeProduto = pNomeProduto;
         this.preco = ppreco;
@@ -44,13 +44,13 @@ export class Produto {
         this.#nomeProduto = value;
     }
 
-    get preco() {
-        return this.#preco;
+    get valor() {
+        return this.#valor;
     }
 
-    set preco(value) {
-        this.#validarpreco(value);
-        this.#preco = value;
+    set valor(value) {
+        this.#validarvalor(value);
+        this.#valor = value;
     }
 
     get imagem() {
@@ -95,7 +95,7 @@ export class Produto {
         }
     }
 
-    #validarpreco(value) {
+    #validarvalor(value) {
         if (!value || value < 0) {
             throw new Error('O valor do produto deve ser maior que zero');
         }
