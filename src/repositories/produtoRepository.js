@@ -3,7 +3,9 @@ import {connection} from '../configs/Database.js';
 const produtoRepository = {
     criar: async (produto) => {
         const sql = 'INSERT INTO produtos (id_categoria, nome, preco, estoque, imagem) VALUES (?, ?, ?, ?, ?);';
-        const values = [produto.idCategoria, produto.nome, produto.preco, produto.estoque, produto.imagem];
+        const values = [produto.idCategoria, produto.nomeProduto, produto.preco, produto.estoque, produto.imagem];
+        console.log(values);
+        
         const rows = await connection.execute(sql, values);
         return rows[0];
     },

@@ -2,16 +2,16 @@ export class Produto {
     #id;
     #idCategoria;
     #nomeProduto;
-    #valor;
-    #vinculoImagem;
+    #preco;
+    #imagem;
     #estoque;
     #dataCad;
 
-    constructor(pIdCategoria, pNomeProduto, pValor, pVinculoImagem, pEstoque, pId) {
+    constructor(pIdCategoria, pNomeProduto, ppreco, pimagem, pEstoque, pId) {
         this.idCategoria = pIdCategoria;
         this.nomeProduto = pNomeProduto;
-        this.valor = pValor;
-        this.vinculoImagem = pVinculoImagem;
+        this.preco = ppreco;
+        this.imagem = pimagem;
         this.estoque = pEstoque;
         this.id = pId;
 
@@ -44,22 +44,22 @@ export class Produto {
         this.#nomeProduto = value;
     }
 
-    get valor() {
-        return this.#valor;
+    get preco() {
+        return this.#preco;
     }
 
-    set valor(value) {
-        this.#validarValor(value);
-        this.#valor = value;
+    set preco(value) {
+        this.#validarpreco(value);
+        this.#preco = value;
     }
 
-    get vinculoImagem() {
-        return this.#vinculoImagem;
+    get imagem() {
+        return this.#imagem;
     }
 
-    set vinculoImagem(value) {
+    set imagem(value) {
         this.#validarPathImagem(value);
-        this.#vinculoImagem = value;
+        this.#imagem = value;
     }
 
     get estoque() {
@@ -95,7 +95,7 @@ export class Produto {
         }
     }
 
-    #validarValor(value) {
+    #validarpreco(value) {
         if (!value || value < 0) {
             throw new Error('O valor do produto deve ser maior que zero');
         }
@@ -111,14 +111,14 @@ export class Produto {
         return new Produto(
             dados.idCategoria,
             dados.nome ?? dados.nomeProduto,
-            dados.valor,
-            dados.caminhoImagem ?? dados.caminhoImage ?? dados.vinculoImagem,
+            dados.preco,
+            dados.caminhoImagem ?? dados.caminhoImage ?? dados.imagem,
             dados.estoque,
             null
         );
     }
 
     static editar(dados, id) {
-        return new Produto(undefined, undefined, dados.valor, undefined, dados.estoque, id);
+        return new Produto(undefined, undefined, dados.preco, undefined, dados.estoque, id);
     }
 }
