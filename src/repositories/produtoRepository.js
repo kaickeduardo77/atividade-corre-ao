@@ -1,31 +1,48 @@
-import {connection} from '../configs/Database.js';
+import { connection } from "../configs/Database.js";
 
 const produtoRepository = {
-    criar: async (produto) => {
-        const sql = 'INSERT INTO produtos (id_categoria, nome, valor, estoque, imagem) VALUES (?, ?, ?, ?, ?);';
-        const values = [produto.idCategoria, produto.nome, produto.valor, produto.estoque, produto.imagem];
 
+    criar: async (produto) => {
+        const sql = 'INSERT INTO produtos (id_categoria, nome, preco, estoque, imagem) VALUES (?,?,?,?,?)';
+        const values = [produto.idCategoria, produto.nomeProduto, produto.valor, produto.estoque, produto.vinculoImagem];
+        const [rows] = await connection.execute(sql, values);
+        return rows;
     
-        
-        const rows = await connection.execute(sql, values);
-        return rows[0];
     },
+
     editar: async (produto) => {
-        const sql = 'UPDATE produtos SET nome = ?, valor = ?, id_categoria = ?, estoque = ?, imagem = ? WHERE id = ?;';
-        const values = [produto.nome, produto.valor, produto.idCategoria, produto.estoque, produto.imagem, produto.id];
-        const rows = await connection.execute(sql, values);
-        return rows[0];
+        const sql = 'UPDATE produtos SET preco = ?, estoque = ?, imagem = ? WHERE id = ?';
+        const values = [produto.valor, produto.estoque, produto.vinculoImagem, produto.id];
+        const [rows] = await connection.execute(sql, values);
+        return rows;
     },
-    deletar: async (id) => {
-        const sql = 'DELETE FROM produtos WHERE id = ?;';
-        const rows = await connection.execute(sql, [id]);
-        return rows[0];
-    },
+
     selecionar: async () => {
-        const sql = 'SELECT * FROM produtos;';
-        const rows = await connection.execute(sql);
-        return rows[0];
+        const sql = "SELECT * FROM produtos";
+        const [rows] = await connection.execute(sql);
+        return rows;
+    },
+
+    deletar: async (id) => {
+        const sql = 'DELETE FROM produtos WHERE id = ?';
+        const values = [id];
+
+        const [rows] = await connection.execute(sql, values);
+
+        if (rows.affectedRows === 0) {
+            throw new Error('Produto não encontrado');
+        }
+
+        return rows;
+    },
+
+    selecionarPorId: async (id) => {
+        const sql = 'SELECT * FROM produtos WHERE id = ?';
+        const values = [id];
+        const [rows] = await connection.execute(sql, values);
+        return rows;
     }
-}
+
+};
 
 export default produtoRepository;
