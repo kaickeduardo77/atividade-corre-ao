@@ -111,7 +111,7 @@ export class Produto {
         
 
  static criar(dados) {
-    return new Produto(dados.idCategoria,dados.nome,dados.valor, dados.imagem,dados.estoque,null
+    return new Produto(dados.idCategoria,dados.nome,dados.valor, dados.estoque,dados.imagem,null
     );
 }
 }
