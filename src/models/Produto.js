@@ -1,16 +1,16 @@
 export class Produto {
     #id;
     #idCategoria;
-    #nomeProduto;
+    #nome;
     #valor;
     #imagem;
     #estoque;
     #dataCad;
 
-    constructor(pIdCategoria, pNomeProduto, pvalor, pimagem, pEstoque, pId) {
+    constructor(pIdCategoria, pNome, pvalor, pimagem, pEstoque, pId) {
         this.idCategoria = pIdCategoria;
-        this.nomeProduto = pNomeProduto;
-        this.preco = ppreco;
+        this.nome = pNome;
+        this.#valor = pvalor;
         this.imagem = pimagem;
         this.estoque = pEstoque;
         this.id = pId;
@@ -35,13 +35,13 @@ export class Produto {
         this.#idCategoria = value;
     }
 
-    get nomeProduto() {
-        return this.#nomeProduto;
+    get nome() {
+        return this.#nome;
     }
 
-    set nomeProduto(value) {
+    set nome(value) {
         this.#validarNome(value);
-        this.#nomeProduto = value;
+        this.#nome = value;
     }
 
     get valor() {
@@ -110,8 +110,8 @@ export class Produto {
     static criar(dados) {
         return new Produto(
             dados.idCategoria,
-            dados.nome ?? dados.nomeProduto,
-            dados.preco,
+            dados.nome ?? dados.nome,
+            dados.valor,
             dados.caminhoImagem ?? dados.caminhoImage ?? dados.imagem,
             dados.estoque,
             null
@@ -119,6 +119,6 @@ export class Produto {
     }
 
     static editar(dados, id) {
-        return new Produto(undefined, undefined, dados.preco, undefined, dados.estoque, id);
+        return new Produto(undefined, undefined, dados.valor, undefined, dados.estoque, id);
     }
 }
