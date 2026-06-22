@@ -102,7 +102,7 @@ export class Produto {
     }
 
     #validarPathImagem(value) {
-        if (value && value.trim().length < 5) {
+        if (value && length < 5) {
             throw new Error('O caminho da imagem deve ter pelo menos 5 caracteres');
         }
     }
