@@ -1,20 +1,19 @@
 export class Produto {
     #id;
     #idCategoria;
-    #nome;
+    #nomeProduto;
     #valor;
-    #imagem;
+    #vinculoImagem;
     #estoque;
     #dataCad;
 
-    constructor(pIdCategoria, pNome, pvalor, pimagem, pEstoque, pId) {
+    constructor(pIdCategoria, pNomeProduto, pValor, pVinculoImagem, pEstoque, pId) {
         this.idCategoria = pIdCategoria;
-        this.nome = pNome;
-        this.valor = pvalor;
-        this.imagem = pimagem;
+        this.nomeProduto = pNomeProduto;
+        this.valor = pValor;
+        this.vinculoImagem = pVinculoImagem;
         this.estoque = pEstoque;
         this.id = pId;
-
     }
 
     get id() {
@@ -35,13 +34,13 @@ export class Produto {
         this.#idCategoria = value;
     }
 
-    get nome() {
-        return this.#nome;
+    get nomeProduto() {
+        return this.#nomeProduto;
     }
 
-    set nome(value) {
+    set nomeProduto(value) {
         this.#validarNome(value);
-        this.#nome = value;
+        this.#nomeProduto = value;
     }
 
     get valor() {
@@ -49,17 +48,17 @@ export class Produto {
     }
 
     set valor(value) {
-        this.#validarvalor(value);
+        this.#validarValor(value);
         this.#valor = value;
     }
 
-    get imagem() {
-        return this.#imagem;
+    get vinculoImagem() {
+        return this.#vinculoImagem;
     }
 
-    set imagem(value) {
+    set vinculoImagem(value) {
         this.#validarPathImagem(value);
-        this.#imagem = value;
+        this.#vinculoImagem = value;
     }
 
     get estoque() {
@@ -95,23 +94,37 @@ export class Produto {
         }
     }
 
-    #validarvalor(value) {
+    #validarValor(value) {
         if (!value || value < 0) {
             throw new Error('O valor do produto deve ser maior que zero');
         }
     }
 
     #validarPathImagem(value) {
-        if (value && length < 5) {
+        if (value && value.trim().length < 5) {
             throw new Error('O caminho da imagem deve ter pelo menos 5 caracteres');
         }
     }
 
-   
-        
+    static criar(dados) {
+        return new Produto(
+            dados.idCategoria,
+            dados.nome ?? dados.nomeProduto,
+            dados.valor,
+            dados.caminhoImagem ?? dados.caminhoImage ?? dados.vinculoImagem,
+            dados.estoque,
+            null
+        );
+    }
 
- static criar(dados) {
-    return new Produto(dados.idCategoria,dados.nome,dados.valor, dados.estoque,dados.imagem,null
-    );
-}
+    static editar(dados, id) {
+        return new Produto(
+            dados.idCategoria,
+            dados.nome ?? dados.nomeProduto,
+            dados.valor,
+            dados.caminhoImagem ?? dados.caminhoImage ?? dados.vinculoImagem,
+            dados.estoque,
+            id
+        );
+    }
 }
