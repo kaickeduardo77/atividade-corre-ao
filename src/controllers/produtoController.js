@@ -1,31 +1,64 @@
-import { Produto } from "../models/Produto.js";
 import produtoRepository from "../repositories/produtoRepository.js";
+import { Produto } from "../models/Produto.js";
 
 const produtoController = {
-
     criar: async (req, res) => {
         try {
-            const nome = String(req.body.nome);
+            console.log("Arquivo recebido:", req.file);
+            console.log("Dados recebidos:", req.body);
 
-            const idCategoria = Number(req.body.idCategoria); // converte o id da categoria recebido na requisição para número
-            const valor = Number(req.body.valor); // converte o preço recebido na requisição para número
-            const estoque = Number(req.body.estoque); // converte o estoque recebido na requisição para número
-            const imagem = `/uploads/image/${req.file.filename}`;
+            // Verifica se a imagem foi enviada
+            if (!req.file) {
+                return res.status(400).json({
+                    message: "Imagem não enviada. O campo deve se chamar 'image'."
+                });
+            }
 
-            const produto = Produto.criar({ idCategoria, nome, valor, estoque, imagem }); // utiliza o método estático criar da classe Produto para criar um objeto da classe Produto a partir dos dados recebidos na requisição
+            const imagemPath = `/uploads/images/${req.file.filename}`;
 
-            console.log(produto.estoque);
-            
-            
+            // Converte e trata os dados vindos do Multipart Form-Data do Insomnia
+            const precoNumerico = Number(req.body.preco ?? req.body.valor);
+            const estoqueNumerico = Number(req.body.estoque);
+            const idCategoriaNumerico = Number(req.body.idCategoria);
+            const nomeProdutoStr = String(req.body.nome ?? req.body.nomeProduto ?? "").trim();
 
-            const resultado = await produtoRepository.criar(produto);
-            res.status(201).json(resultado);
+            // Validação rápida no controller para garantir que não vai NaN ou zerado para o Model
+            if (!nomeProdutoStr) {
+                return res.status(400).json({ message: "O nome do produto é obrigatório." });
+            }
+            if (isNaN(precoNumerico) || precoNumerico <= 0) {
+                return res.status(400).json({ message: "O valor do produto deve ser maior que zero." });
+            }
+            if (isNaN(estoqueNumerico) || estoqueNumerico < 0) {
+                return res.status(400).json({ message: "O estoque deve ser um número válido." });
+            }
+
+            // Objeto completo suprindo tanto as exigências do Model (valor/vinculoImagem) 
+            // quanto do repositório/banco de dados (preco/imagem)
+            const dadosProduto = {
+                idCategoria: idCategoriaNumerico,
+                nomeProduto: nomeProdutoStr,
+                nome: nomeProdutoStr,
+                valor: precoNumerico,
+                preco: precoNumerico,
+                estoque: estoqueNumerico,
+                vinculoImagem: imagemPath,
+                imagem: imagemPath
+            };
+
+            // Salva no banco de dados através do repositório
+            const resultado = await produtoRepository.criar(dadosProduto);
+
+            return res.status(201).json({
+                message: "Produto criado com sucesso.",
+                resultado
+            });
 
         } catch (error) {
+            console.error("Erro ao criar produto:", error);
 
-            console.log(error);
-            res.status(500).json({
-                message: "Erro ao criar produto",
+            return res.status(400).json({
+                message: "Erro ao criar produto.",
                 errorMessage: error.message
             });
         }
@@ -34,23 +67,39 @@ const produtoController = {
     atualizar: async (req, res) => {
         try {
             const id = Number(req.params.id);
-            const { valor, estoque } = req.body;
+            const { valor, preco, estoque } = req.body;
+            const precoFinal = Number(preco ?? valor);
+            const estoqueNumerico = Number(estoque);
 
-            if (isNaN(id) || valor === undefined || estoque === undefined) {
+            if (
+                !Number.isInteger(id) ||
+                id <= 0 ||
+                isNaN(precoFinal) ||
+                isNaN(estoqueNumerico)
+            ) {
                 return res.status(400).json({
-                    message: 'ID, valor e estoque são obrigatórios'
+                    message: "ID, preço/valor e estoque válidos são obrigatórios."
                 });
             }
 
-            const produto = Produto.editar({ valor: Number(valor), estoque: Number(estoque) }, id);
+            const dadosAtualizados = {
+                id,
+                valor: precoFinal,
+                preco: precoFinal,
+                estoque: estoqueNumerico,
+                vinculoImagem: null,
+                imagem: null
+            };
 
-            const resultado = await produtoRepository.editar(produto);
+            const resultado = await produtoRepository.editar(dadosAtualizados);
+
             return res.status(200).json({ resultado });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).json({
-                message: 'Ocorreu um erro no servidor',
+            console.error("Erro ao atualizar produto:", error);
+
+            return res.status(500).json({
+                message: "Ocorreu um erro no servidor.",
                 errorMessage: error.message
             });
         }
@@ -58,15 +107,12 @@ const produtoController = {
 
     selecionar: async (req, res) => {
         try {
-            const result = await produtoRepository.selecionar();
-
-            res.status(200).json(result);
-
+            const resultado = await produtoRepository.selecionar();
+            return res.status(200).json(resultado);
         } catch (error) {
-            console.log(error);
-
-            res.status(500).json({
-                message: "Erro no servidor",
+            console.error("Erro ao listar produtos:", error);
+            return res.status(500).json({
+                message: "Erro ao listar produtos.",
                 errorMessage: error.message
             });
         }
@@ -76,14 +122,19 @@ const produtoController = {
         try {
             const id = Number(req.params.id);
 
-            const result = await produtoRepository.deletar(id);
+            if (!Number.isInteger(id) || id <= 0) {
+                return res.status(400).json({
+                    message: "ID do produto inválido."
+                });
+            }
 
-            res.status(200).json({ result });
+            const resultado = await produtoRepository.deletar(id);
+            return res.status(200).json({ resultado });
 
         } catch (error) {
-            console.log(error);
-            res.status(500).json({
-                message: 'Ocorreu um erro no servidor',
+            console.error("Erro ao excluir produto:", error);
+            return res.status(500).json({
+                message: "Erro ao excluir produto.",
                 errorMessage: error.message
             });
         }
@@ -92,13 +143,20 @@ const produtoController = {
     selecionarPorId: async (req, res) => {
         try {
             const id = Number(req.params.id);
-            const result = await produtoRepository.selecionarPorId(id);
-            res.status(200).json({ result });
-            
+
+            if (!Number.isInteger(id) || id <= 0) {
+                return res.status(400).json({
+                    message: "ID do produto inválido."
+                });
+            }
+
+            const resultado = await produtoRepository.selecionarPorId(id);
+            return res.status(200).json({ resultado });
+
         } catch (error) {
-            console.log(error);
-            res.status(500).json({
-                message: 'Ocorreu um erro no servidor',
+            console.error("Erro ao buscar produto:", error);
+            return res.status(500).json({
+                message: "Erro ao buscar produto.",
                 errorMessage: error.message
             });
         }
